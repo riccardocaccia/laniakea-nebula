@@ -3,6 +3,11 @@ variable "os_auth_url" {
   description = "OpenStack Keystone v3 auth URL"
 }
 
+variable "os_id" {
+  type      = string
+  description = "OpenStack personal id"
+}
+
 variable "os_username" {
   type      = string
   description = "OpenStack username"
@@ -16,7 +21,7 @@ variable "os_password" {
 
 variable "os_tenant_id" {
   type = string
-  description = "OpenStack project/tenant ID"
+  description = "OpenStack project"
 }
 
 variable "os_domain_name" {
@@ -27,7 +32,7 @@ variable "os_domain_name" {
 
 variable "bastion_ip" {
   type = string
-  description = "Public IP (or bastion) allowed to SSH and access HTTP"
+  description = "Bastion allowed to SSH and access HTTP"
 }
 
 variable "ssh_public_key" {

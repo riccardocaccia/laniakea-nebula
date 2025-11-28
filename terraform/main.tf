@@ -9,20 +9,24 @@ terraform {
 }
  
 provider "openstack" {
-  //cloud = "recas"
-  tenant_id = "7f4c27e308d143e7b6a61b421173bdb1"
+  
+  tenant_id = var.os_tenant_id
+  user_name   = var.os_username     
+  password    = var.os_password      
+  #domain_name = var.os_domain_name  
   auth_url = "https://keystone.recas.ba.infn.it/v3"
+
   endpoint_overrides = {
-    "network"  = "https://neutron.recas.ba.infn.it/v2.0/"
-    "volumev3" = "https://cinder.recas.ba.infn.it/v3/"
-    "image" = "https://glance.recas.ba.infn.it/v2/"
+    "network"  = "https://neutron.recas.ba.infn.it:443"
+    "volumev3" = "https://cinder.recas.ba.infn.it:443/v3/7f4c27e308d143e7b6a61b421173bdb1"
+    "image" = "https://glance.recas.ba.infn.it:443"
   }
 }
 
 # SSH key definition
 resource "openstack_compute_keypair_v2" "vm_key" {
-  name       = "my-keypair"
-  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZ6M41F4sf9ipRutlCNxGxpSNT9snjwIhaWbNiGKIr9 ma.tangaro@gmail.com"
+  name       = "rcaccia_key"
+  public_key = var.ssh_public_key
 }
 
 # Private network definition
@@ -47,7 +51,7 @@ resource "openstack_networking_secgroup_rule_v2" "ssh_from_bastion" {
   protocol          = "tcp"
   port_range_min    = 22
   port_range_max    = 22
-  remote_ip_prefix  = "212.189.202.200/32"
+  remote_ip_prefix  = var.bastion_ip
   security_group_id = openstack_networking_secgroup_v2.ssh_internal.id
 }
 
@@ -64,15 +68,15 @@ resource "openstack_networking_secgroup_rule_v2" "http_in" {
   protocol          = "tcp"
   port_range_min    = 80
   port_range_max    = 80
-  remote_ip_prefix  = "212.189.202.200/32"
+  remote_ip_prefix  = var.bastion_ip
   security_group_id = openstack_networking_secgroup_v2.http_access.id
 }
 
 # Galaxy VM configuration
 resource "openstack_compute_instance_v2" "galaxy_vm" {
   name        	= "galaxy-private"
-  image_name  	= "RockyLinux_9.5_20241118"
-  flavor_name 	= "xlarge"
+  image_name  	= var.image_name
+  flavor_name 	= var.flavor_name
   key_pair    = openstack_compute_keypair_v2.vm_key.name
   security_groups = [
     "default",
