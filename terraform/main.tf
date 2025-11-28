@@ -10,7 +10,7 @@ terraform {
  
 provider "openstack" {
   //cloud = "recas"
-  tenant_id = "3b38073bf9e04049bf0cab08b2c1c9a0"
+  tenant_id = "7f4c27e308d143e7b6a61b421173bdb1"
   auth_url = "https://keystone.recas.ba.infn.it/v3"
   endpoint_overrides = {
     "network"  = "https://neutron.recas.ba.infn.it/v2.0/"
