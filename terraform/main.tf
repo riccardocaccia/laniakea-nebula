@@ -10,11 +10,11 @@ terraform {
  
 provider "openstack" {
   
-  tenant_id = var.os_tenant_id
-  user_name   = var.os_username     
-  password    = var.os_password      
-  #domain_name = var.os_domain_name  
-  auth_url = "https://keystone.recas.ba.infn.it/v3"
+  user_name           = var.os_username
+  password            = var.os_password
+  domain_name         = "a7fe3e616c584ff882c5899236a905f6"  
+  auth_url            = "https://keystone.recas.ba.infn.it/v3"
+  region              = "RegionOne"
 
   endpoint_overrides = {
     "network"  = "https://neutron.recas.ba.infn.it:443"
