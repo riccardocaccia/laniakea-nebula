@@ -3,3 +3,5 @@ terraform.tfvars
 *.tfstate.backup
 .terraform/
 cloud-openrc.sh
+openstack-oidc.sh
+*.hcl
