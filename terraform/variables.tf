@@ -8,6 +8,11 @@ variable "os_id" {
   description = "OpenStack personal id"
 }
 
+variable "os_token" {
+  type      = string
+  description = "OIDC token"
+}
+
 variable "os_username" {
   type      = string
   description = "OpenStack username"

@@ -10,22 +10,22 @@ terraform {
  
 provider "openstack" {
   
-  user_name           = var.os_username
-  password            = var.os_password
-  domain_name         = "a7fe3e616c584ff882c5899236a905f6"  
-  auth_url            = "https://keystone.recas.ba.infn.it/v3"
-  region              = "RegionOne"
+  auth_url              = "https://keystone.recas.ba.infn.it/v3"
+  region                = "RegionOne"
+  token                 = var.os_token
+#  domain_name           = "a7fe3e616c584ff882c5899236a905f6"
+  tenant_id             = var.os_tenant_id
 
   endpoint_overrides = {
-    "network"  = "https://neutron.recas.ba.infn.it:443"
-    "volumev3" = "https://cinder.recas.ba.infn.it:443/v3/7f4c27e308d143e7b6a61b421173bdb1"
-    "image" = "https://glance.recas.ba.infn.it:443"
+    "network"  = "https://neutron.recas.ba.infn.it/v2.0/"
+    "volumev3" = "https://cinder.recas.ba.infn.it/v3/"
+    "image" = "https://glance.recas.ba.infn.it/v2/"
   }
 }
 
 # SSH key definition
 resource "openstack_compute_keypair_v2" "vm_key" {
-  name       = "rcaccia_key"
+  name       = "rcaccia_key_terraform"
   public_key = var.ssh_public_key
 }
 
