@@ -12,7 +12,7 @@ fi
 git clone https://github.com/Laniakea-elixir-it/laniakea-nebula.git /root/laniakea-nebula
 
 # Install Ansible roles
-export ANSIBLEPATH=/root/laniakea-nebula/terraform/ansible
+export ANSIBLEPATH=/root/laniakea-nebula/ansible/ansible_galaxy
 export ROLESPATH=$ANSIBLEPATH/roles
 mkdir -p $ROLESPATH
 ansible-galaxy role install -p $ROLESPATH -r $ANSIBLEPATH/requirements.yml

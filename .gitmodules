@@ -1,0 +1,6 @@
+[submodule "ansible/ansible-role-vpn-bastion"]
+	path = ansible/ansible-role-vpn-bastion
+	url = https://github.com/Laniakea-elixir-it/ansible-role-vpn-bastion.git
+[submodule "terraform/aws"]
+	path = terraform/aws
+	url = https://github.com/riccardocaccia/terraform_file_aws.git
