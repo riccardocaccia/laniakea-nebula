@@ -4,3 +4,6 @@
 [submodule "terraform/aws"]
 	path = terraform/aws
 	url = https://github.com/riccardocaccia/terraform_file_aws.git
+[submodule "docker-compose"]
+	path = docker-compose
+	url = https://github.com/riccardocaccia/docker-compose-keycloak-nginx-postgredb.git
