@@ -73,6 +73,20 @@
       selinux:
         state: disabled
 
+    - name: 'Create Galaxy directories'
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: rocky
+        group: rocky
+        mode: '0755'
+      loop:
+        - /srv/galaxy
+        - /srv/galaxy/server
+        - /srv/galaxy/config
+        - /srv/galaxy/database
+        - /srv/galaxy/.venv
+
   roles:
     - galaxyproject.postgresql
     - role: galaxyproject.postgresql_objects
