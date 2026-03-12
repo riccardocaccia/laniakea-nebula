@@ -2,6 +2,8 @@
   become: true
   become_method: sudo
   vars:
+    ansible_become_method: sudo
+    galaxy_become_method: sudo
     postgresql_pg_hba_conf:
       - "local all all trust"
       - "host all all 127.0.0.1/32 trust"
