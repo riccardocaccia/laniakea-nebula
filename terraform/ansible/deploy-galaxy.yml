@@ -4,8 +4,6 @@
   vars:
     ansible_ssh_pipelining: true
     ansible_ssh_user: rocky
-
-    # Fix per Rocky Linux - evita connessione SSH come root
     galaxy_privsep_user: rocky
     galaxy_remote_user: rocky
 
