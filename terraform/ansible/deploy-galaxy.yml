@@ -107,6 +107,12 @@
         create_home: false
         state: present
 
+    - name: 'Add rocky to galaxy group'
+      user:
+        name: rocky
+        groups: galaxy
+        append: true
+
     - name: 'Create /srv/galaxy'
       file:
         path: /srv/galaxy
