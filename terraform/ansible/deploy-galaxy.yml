@@ -3,6 +3,8 @@
   become_method: sudo
   vars:
     ansible_ssh_pipelining: true
+    galaxy_become: true
+    galaxy_become_user: root
     ansible_ssh_user: rocky
     galaxy_create_user: true
     galaxy_create_privsep_user: true
