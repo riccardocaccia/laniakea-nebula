@@ -1,7 +1,5 @@
----
 - hosts: all
   become: true
-  become_user: root
   become_method: sudo
   vars:
     ansible_ssh_pipelining: true
@@ -10,8 +8,6 @@
     galaxy_remote_user: rocky
     galaxy_create_user: true
     galaxy_create_privsep_user: true
-
-    # PostgreSQL
 
     postgresql_pg_hba_conf:
       - "local all all trust"
@@ -25,7 +21,6 @@
       - name: galaxy
         owner: galaxy
 
-    # Galaxy layou
     galaxy_root: /srv/galaxy
     galaxy_server_dir: "{{ galaxy_root }}/server"
     galaxy_venv_dir: "{{ galaxy_root }}/.venv"
@@ -52,7 +47,11 @@
   pre_tasks:
     - name: '[EL] Install Packages for Rocky Linux'
       ansible.builtin.dnf:
-        name: ['langpacks-en', 'glibc-all-langpacks', 'epel-release', 'python3-wheel-wheel']
+        name:
+          - langpacks-en
+          - glibc-all-langpacks
+          - epel-release
+          - python3-wheel-wheel
         enablerepo: crb
         state: present
 
@@ -64,27 +63,59 @@
 
     - name: '[EL] Install Galaxy Dependencies'
       package:
-        name: ['acl', 'bzip2', 'git', 'make', 'python-psycopg2', 'python3-psycopg2', 'tar', 'pip', 'gcc', 'openssl-devel', 'bzip2-devel', 'libffi-devel', 'zlib-devel', 'xz-devel', 'sqlite-devel', 'wget']
+        name:
+          - acl
+          - bzip2
+          - git
+          - make
+          - python-psycopg2
+          - python3-psycopg2
+          - tar
+          - pip
+          - gcc
+          - openssl-devel
+          - bzip2-devel
+          - libffi-devel
+          - zlib-devel
+          - xz-devel
+          - sqlite-devel
+          - wget
+
     - name: Install pgdg repository package (RedHat)
       yum:
         name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-        disable_gpg_check: True
+        disable_gpg_check: true
 
     - name: '[EL] update ca-certificates'
       command: 'yum update -y ca-certificates'
+
     - name: '[EL] Disable SELinux'
       selinux:
         state: disabled
 
-    - name: 'Create /srv/galaxy for initial clone'
+    - name: 'Create galaxy group'
+      group:
+        name: galaxy
+        state: present
+
+    - name: 'Create galaxy user'
+      user:
+        name: galaxy
+        group: galaxy
+        home: /srv/galaxy
+        shell: /bin/bash
+        create_home: false
+        state: present
+
+    - name: 'Create /srv/galaxy'
       file:
         path: /srv/galaxy
         state: directory
         owner: rocky
         group: rocky
         mode: '0755'
-    
-    - name: 'Create Galaxy directories'
+
+    - name: 'Create Galaxy subdirectories'
       file:
         path: "{{ item }}"
         state: directory
@@ -92,7 +123,6 @@
         group: rocky
         mode: '0755'
       loop:
-        - /srv/galaxy
         - /srv/galaxy/server
         - /srv/galaxy/config
         - /srv/galaxy/database
@@ -119,10 +149,13 @@
         owner: galaxy
         group: galaxy
         mode: '0755'
+
     - name: galaxyctl update
       command: "{{ galaxy_gravity_command }} -c {{ galaxy_config_file }} update"
+
     - name: galaxy gravity restart
       command: "{{ galaxy_gravity_command }} -c {{ galaxy_config_file }} graceful"
+
     - name: 'Wait Galaxy'
       wait_for:
         host: 127.0.0.1
