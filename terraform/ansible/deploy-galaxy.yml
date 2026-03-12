@@ -3,6 +3,7 @@
   become_method: sudo
   vars:
     ansible_become_method: sudo
+    galaxy_git_repo_ssh_key: null
     galaxy_become_method: sudo
     ansible_become_flags: '-n -s'
     ansible_ssh_pipelining: true
@@ -31,6 +32,7 @@
 
     galaxy_config:
       galaxy:
+        galaxy_git_repo: "https://github.com/galaxyproject/galaxy.git"
         admin_users: admin@galaxy.laniakea.it
         database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
         file_path: "{{ galaxy_mutable_data_dir }}/datasets"
