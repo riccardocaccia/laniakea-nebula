@@ -76,12 +76,12 @@
         state: disabled
 
     - name: 'Create /srv/galaxy for initial clone'
-    file:
-      path: /srv/galaxy
-      state: directory
-      owner: rocky
-      group: rocky
-      mode: '0755'
+      file:
+        path: /srv/galaxy
+        state: directory
+        owner: rocky
+        group: rocky
+        mode: '0755'
     
     - name: 'Create Galaxy directories'
       file:
