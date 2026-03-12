@@ -4,6 +4,8 @@
   vars:
     ansible_become_method: sudo
     galaxy_become_method: sudo
+    ansible_become_flags: '-n -s'
+    ansible_ssh_pipelining: true
     postgresql_pg_hba_conf:
       - "local all all trust"
       - "host all all 127.0.0.1/32 trust"
