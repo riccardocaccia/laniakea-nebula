@@ -47,48 +47,53 @@
           bind: "0.0.0.0:4001"
 
   pre_tasks:
+    - name: Force RedHat variables for Rocky Linux
+      set_fact:
+        ansible_distribution: "RedHat"
+      when: ansible_distribution == "Rocky"
+
     - name: '[EL] Install Packages for Rocky Linux'
       ansible.builtin.dnf:
-        name: ['langpacks-en', 'glibc-all-langpacks', 'epel-release', 'python3-wheel-wheel']
+        name: ['langpacks-en', 'glibc-all-langpacks', 'epel-release', 'python3-wheel']
         enablerepo: crb
         state: present
 
     - name: Install python3-virtualenv
       yum:
         name: python3-virtualenv
-        enablerepo: epel-release
         state: present
 
     - name: '[EL] Install Galaxy Dependencies'
       package:
-        name: ['acl', 'bzip2', 'git', 'make', 'python-psycopg2', 'python3-psycopg2', 'tar', 'pip', 'gcc', 'openssl-devel', 'bzip2-devel', 'libffi-devel', 'zlib-devel', 'xz-devel', 'sqlite-devel', 'wget']
+        name: ['acl', 'bzip2', 'git', 'make', 'python3-psycopg2', 'tar', 'python3-pip', 'gcc', 'openssl-devel', 'bzip2-devel', 'libffi-devel', 'zlib-devel', 'xz-devel', 'sqlite-devel', 'wget']
 
     - name: Install pgdg repository package (RedHat)
       yum:
         name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
         disable_gpg_check: True
 
-    - name: '[EL] update ca-certificates'
-      command: 'yum update -y ca-certificates'
-
     - name: '[EL] Disable SELinux'
       selinux:
         state: disabled
 
-    - name: 'Create /srv/galaxy for initial clone'
-      file:
-        path: /srv/galaxy
-        state: directory
-        owner: rocky
-        group: rocky
-        mode: '0755'
-    
-    - name: 'Create Galaxy directories'
+    - name: Ensure galaxy group exists
+      group:
+        name: "{{ galaxy_group }}"
+        state: present
+
+    - name: Ensure galaxy user exists
+      user:
+        name: "{{ galaxy_user }}"
+        group: "{{ galaxy_group }}"
+        shell: /bin/bash
+        state: present
+
+    - name: 'Create Galaxy directories with correct ownership'
       file:
         path: "{{ item }}"
         state: directory
-        owner: rocky
-        group: rocky
+        owner: "{{ galaxy_user }}"
+        group: "{{ galaxy_group }}"
         mode: '0755'
       loop:
         - /srv/galaxy
@@ -104,10 +109,11 @@
       become_user: postgres
     - geerlingguy.pip
     - galaxyproject.tusd
-    - galaxyproject.galaxy
+    - role: galaxyproject.galaxy
+      become: true
     - role: galaxyproject.miniconda
       become: true
-      become_user: galaxy
+      become_user: "{{ galaxy_user }}"
     - galaxyproject.nginx
 
   post_tasks:
@@ -115,21 +121,25 @@
       file:
         state: directory
         path: '{{ export_dir }}'
-        owner: galaxy
-        group: galaxy
+        owner: "{{ galaxy_user }}"
+        group: "{{ galaxy_group }}"
         mode: '0755'
 
     - name: galaxyctl update
       command: "{{ galaxy_gravity_command }} -c {{ galaxy_config_file }} update"
+      become: true
+      become_user: "{{ galaxy_user }}"
 
     - name: galaxy gravity restart
       command: "{{ galaxy_gravity_command }} -c {{ galaxy_config_file }} graceful"
+      become: true
+      become_user: "{{ galaxy_user }}"
 
     - name: 'Wait Galaxy'
       wait_for:
         host: 127.0.0.1
         port: '4001'
-        timeout: 15000
+        timeout: 600
 
     - name: lock-file absent
       file:
