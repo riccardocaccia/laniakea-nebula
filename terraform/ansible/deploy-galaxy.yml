@@ -5,6 +5,12 @@
     ansible_ssh_pipelining: true
 
   pre_tasks:
+    - name: 'Create shared ansible tmp directory'
+      file:
+        path: /tmp/.ansible-rocky
+        state: directory
+        mode: '0777'
+  
     - name: 'Create galaxy group'
       group:
         name: galaxy
